@@ -1,0 +1,235 @@
+To participate in this hackathon, you must agree to the following rules:
+
+You must use the provided dataset for your model training and evaluation.
+
+You are allowed to use only the sklearn machine learning algorithm of your choice.
+
+You must submit the below files with the same file names:
+
+artifacts. zip-You must put all the artifacts like the model pickle file(.pkl) inside the artifacts folder and zip it.
+requirements. txt-You must mention all the dependencies used with specified versions of the packages.
+model_testing.py-You must mention all the things used while training like preprocessing and feature engineering.
+You must put csv files under the dataset folder.
+You must put artifacts under the artifacts folder.
+The model_testing.py must return the submission file as “predictions.csv” only.
+Your model must be able to predict whether a transaction is fraudulent or not and provide a score of 0 and 1.
+
+Your model should not exceed a maximum file size of 100MB.
+
+You must adhere to the code of conduct outlined in this hackathon.
+
+
+Sample code for model_testing.py
+
+import pandas as pd
+import numpy as np 
+import os
+import pickle 
+import json
+
+feature_cols = ['shtrn','adr_day_bucket_1', 'adr_day_bucket_2', 'adr_day_bucket_3', 'adr_txn_count', 'adr_txn_type_count', 'adr_active_days', 'adr_unique_terminals_count', 'adr_unique_shispt_count', 'adr_unique_shispt_count_succ_cw', 'adr_unique_shispt_count_succ_mp', 'adr_age', 'adr_cw_count', 'adr_merch_pay_count', 'adr_blnce_enq_count', 'adr_cash_deposit_count', 'adr_fund_transfer_count', 'adr_mini_statmt_count', 'adr_auth_onus_count', 'adr_avg_amt_cw', 'adr_avg_amt_mp', 'adr_avg_amt_cash_deposit', 'adr_avg_amt_fund_transfer', 'adr_median_amt_cw', 'adr_median_amt_mp', 'adr_median_amt_cash_deposit', 'adr_median_amt_fund_transfer', 'adr_fail_count_cw', 'adr_fail_count_mp', 'adr_lt_5kamt_count_cw', 'adr_gt_9kamt_count_cw', 'adr_lt_5kamt_count_mp', 'adr_gt_9kamt_count_mp', 'adr_std_dev_cw', 'adr_min_amt_cw',
+'adr_max_amt_cw', 'adr_std_dev_mp', 'adr_min_amt_mp', 'adr_max_amt_mp', 'adr_count_0to4', 'adr_count_5to7', 'adr_count_8to20',
+'adr_count_21to23', 'adr_avg_amt_0to4', 'adr_avg_amt_5to7', 'adr_avg_amt_8to20', 'adr_avg_amt_21to23', 'adr_count_bd_kt', 'adr_count_bd_om', 'adr_count_bd_w9', 'adr_count_bd_wa', 'adr_count_bd_24', 'adr_count_bd_u3', 'adr_count_bd_59', 'adr_count_bd_12', 'adr_kt_decline_active_days', 'adr_om_decline_active_days', 'adr_w9_decline_active_days', 'adr_wa_decline_active_days', 'adr_24_decline_active_days', 'adr_u3_decline_active_days', 'adr_59_decline_active_days', 'adr_12_decline_active_days', 'adr_count_friday', 'adr_count_saturday', 'adr_count_sunday', 'adr_avg_amt_friday', 'adr_avg_amt_saturday', 'adr_avg_amt_sunday',
+'bct_txn_count', 'bct_active_days', 'bct_unique_aadhaar_count', 'bct_age', 'bct_day_bucket_1', 'bct_day_bucket_2', 'bct_day_bucket_3', 'bct_cw_count', 'bct_merch_pay_count', 'bct_avg_amt_cw', 'bct_avg_amt_mp','bct_median_amt_cw', 'bct_median_amt_mp', 'bct_fail_count_cw',
+'bct_fail_count_mp', 'bct_lt_5kamt_count_cw', 'bct_gt_9kamt_count_cw', 'bct_lt_5kamt_count_mp', 'bct_gt_9kamt_count_mp', 'bct_std_dev_cw', 'bct_min_amt_cw', 'bct_max_amt_cw', 'bct_std_dev_mp', 'bct_min_amt_mp', 'bct_max_amt_mp', 'bct_count_0to4', 'bct_count_5to7', 'bct_count_8to20', 'bct_count_21to23', 'bct_avg_amt_0to4', 'bct_avg_amt_5to7', 'bct_avg_amt_8to20', 'bct_avg_amt_21to23', 'bct_count_bd_14', 'bct_count_bd_15', 'bct_count_bd_uw', 'bct_count_bd_24', 'bct_count_bd_12', 'bct_count_bd_20', 'bct_count_bd_59', 'bct_uw_decline_active_days', 'bct_24_decline_active_days', 'bct_59_decline_active_days', 'bct_14_decline_active_days', 'bct_15_decline_active_days', 'bct_12_decline_active_days', 'bct_20_decline_active_days', 'bct_count_friday', 'bct_count_saturday', 'bct_count_sunday', 'bct_avg_amt_friday', 'bct_avg_amt_saturday', 'bct_avg_amt_sunday']
+
+df = pd.read_csv('dataset/aeps_hackathon_test.csv')
+
+X_test = df[feature_cols]
+
+X_test = X_test.fillna(0)
+
+with open('artifacts/model.pkl', 'rb') as f:
+      model = pickle.load(f)
+
+df['prediction'] = model.predict(X_test)
+
+results_df = df[['id', 'prediction']]
+
+results_df.to_csv('predictions.csv', index=False)
+
+DATA DICTIONARY
+
+
+
+| Features                        | Description                                                                                                                   |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| id                              | Serial number                                                                                                                 |
+| shttim                          | Time of the transaction                                                                                                       |
+| shtrty                          | Type of the transaction                                                                                                       |
+| fraud_flag                      | Target column                                                                                                                 |
+| adr_day_bucket_1                | Count of successful transaction happened on dates (1 to 10) by an aadhaar in last 180 days                                 |
+| adr_day_bucket_2                | Count of successful transaction happened on dates (11 to 20) by an aadhaar in last 180 days                                |
+| adr_day_bucket_3                | Count of successful transaction happened on dates (21 to 30) by an aadhaar in last 180 days                                |
+| adr_txn_count                   | Count of successful transactions done by aadhaar in last 180 days                                                          |
+| adr_txn_type_count              | Count of successful transaction types done by aadhaar in last 180 days                                                     |
+| adr_active_days                 | Count of days an aadhaar has done at least one transaction in last 180 days                                                |
+| adr_unique_terminals_count      | Count of unique terminals used by an aadhaar to do transactions in last 180 days                                           |
+| adr_unique_shispt_count         | Count of unique banks used by an aadhaar to do transactions in last 180 days                                               |
+| adr_unique_shispt_count_succ_cw | Count of unique terminals used by an aadhaar to do successful cash withdrawal transactions in last 180 days                |
+| adr_unique_shispt_count_succ_mp | Count of unique terminals used by an aadhaar to do successful merchant pay transactions in last 180 days                   |
+| adr_age                         | Count of days since the first transaction done by an aadhaar in last 180 days                                              |
+| adr_cw_count                    | Count of successful cash withdrawal transactions by an aadhaar in last 180 days                                            |
+| adr_merch_pay_count             | Count of successful merchant pay transactions by an aadhaar in last 180 days                                               |
+| adr_blnce_enq_count             | Count of successful balance enquiry transactions by an aadhaar in last 180 days                                            |
+| adr_cash_deposit_count          | Count of successful cash deposit transactions by an aadhaar in last 180 days                                               |
+| adr_fund_transfer_count         | Count of successful fund transfer transactions by an aadhaar in last 180 days                                              |
+| adr_mini_statmt_count           | Count of successful mini statement transactions by an aadhaar in last 180 days                                             |
+| adr_auth_onus_count             | Count of successful UIDAI auth onus transactions by an aadhaar in last 180 days                                            |
+| adr_avg_amt_cw                  | Average transaction amount of successful cash withdrawal transactions by an aadhaar in last 180 days                       |
+| adr_avg_amt_mp                  | Average transaction amount of successful merchant pay transactions by an aadhaar in last 180 days                          |
+| adr_avg_amt_cash_deposit        | Average transaction amount of successful cash deposit transactions by an aadhaar in last 180 days                          |
+| adr_avg_amt_fund_transfer       | Average transaction amount of successful fund transfer transactions by an aadhaar in last 180 days                         |
+| adr_median_amt_cw               | Median transaction amount of successful cash withdrawal transactions by an aadhaar in last 180 days                        |
+| adr_median_amt_mp               | Median transaction amount of successful merchant pay transactions by an aadhaar in last 180 days                           |
+| adr_median_amt_cash_deposit     | Median transaction amount of successful cash deposit transactions by an aadhaar in last 180 days                           |
+| adr_median_amt_fund_transfer    | Median transaction amount of successful fund transfer transactions by an aadhaar in last 180 days                          |
+| adr_fail_count_cw               | Count of failed cash withdrawal transactions by an aadhaar in last 180 days                                                |
+| adr_fail_count_mp               | Count of failed merchant pay transactions by an aadhaar in last 180 days                                                   |
+| adr_lt_5kamt_count_cw           | Count of successful cash withdrawal transactions where transaction amount is less than 5000 by an aadhaar in last 180 days |
+| adr_gt_9kamt_count_cw           | Count of successful cash withdrawal transactions where transaction amount is more than 9000 by an aadhaar in last 180 days |
+| adr_lt_5kamt_count_mp           | Count of successful merchant pay transactions where transaction amount is less than 5000 by an aadhaar in last 180 days    |
+| adr_gt_9kamt_count_mp           | Count of successful merchant pay transactions where transaction amount is more than 9000 by an aadhaar in last 180 days    |
+| adr_std_dev_cw                  | Standard deviations of successful cash withdrawal transactions by an aadhaar in last 180 days                              |
+| adr_min_amt_cw                  | Minimum transaction amount for successful cash withdrawal transaction by an aadhaar in last 180 days                       |
+| adr_max_amt_cw                  | Maximum transaction amount for successful cash withdrawal transaction by an aadhaar in last 180 days                       |
+| adr_std_dev_mp                  | Standard deviations of successful merchant pay transactions by an aadhaar in last 180 days                                 |
+| adr_min_amt_mp                  | Minimum transaction amount for successful merchant pay transaction by an aadhaar in last 180 days                          |
+| adr_max_amt_mp                  | Maximum transaction amount for successful merchant pay transaction by an aadhaar in last 180 days                          |
+| adr_count_0to4                  | Count of successful transaction happened between 12:00 am to 4:59 am by an aadhaar in last 180 days                        |
+| adr_count_5to7                  | Count of successful transaction happened between 5:00 am to 7:59 am by an aadhaar in last 180 days                         |
+| adr_count_8to20                 | Count of successful transaction happened between 8:00 am to 8:59 pm by an aadhaar in last 180 days                         |
+| adr_count_21to23                | Count of successful transaction happened between 9:00 pm to 11:59 pm by an aadhaar in last 180 days                        |
+| adr_avg_amt_0to4                | Average amount of successful transactions happened between 12:00 am to 4:59 am by an aadhaar in last 180 days              |
+| adr_avg_amt_5to7                | Average amount of successful transactions happened between 5:00 am to 7:59 am by an aadhaar in last 180 days               |
+| adr_avg_amt_8to20               | Average amount of successful transactions happened between 8:00 am to 8:59 pm by an aadhaar in last 180 days               |
+| adr_avg_amt_21to23              | Average amount of successful transactions happened between 9:00 pm to 11:59 pm by an aadhaar in last 180 days              |
+| adr_count_bd_kt                 | Count of declined transactions having response code as 'KT' for an aadhaar in last 180 days                                |
+| adr_count_bd_om                 | Count of declined transactions having response code as 'OM' for an aadhaar in last 180 days                                |
+| adr_count_bd_w9                 | Count of declined transactions having response code as 'W9' for an aadhaar in last 180 days                                |
+| adr_count_bd_wa                 | Count of declined transactions having response code as 'WA' for an aadhaar in last 180 days                                |
+| adr_count_bd_24                 | Count of declined transactions having response code as '24' for an aadhaar in last 180 days                                |
+| adr_count_bd_u3                 | Count of declined transactions having response code as 'U3' for an aadhaar in last 180 days                                |
+| adr_count_bd_59                 | Count of declined transactions having response code as '59' for an aadhaar in last 180 days                                |
+| adr_count_bd_12                 | Count of declined transactions having response code as '12' for an aadhaar in last 180 days                                |
+| adr_kt_decline_active_days      | Count of days an aadhaar has done at least one declined transaction having response code as 'KT' in last 180 days          |
+| adr_om_decline_active_days      | Count of days an aadhaar has done at least one declined transaction having response code as 'OM' in last 180 days          |
+| adr_w9_decline_active_days      | Count of days an aadhaar has done at least one declined transaction having response code as 'w9' in last 180 days          |
+| adr_wa_decline_active_days      | Count of days an aadhaar has done at least one declined transaction having response code as 'WA' in last 180 days          |
+| adr_24_decline_active_days      | Count of days an aadhaar has done at least one declined transaction having response code as '24' in last 180 days          |
+| adr_u3_decline_active_days      | Count of days an aadhaar has done at least one declined transaction having response code as 'U3' in last 180 days          |
+| adr_59_decline_active_days      | Count of days an aadhaar has done at least one declined transaction having response code as '59' in last 180 days          |
+| adr_12_decline_active_days      | Count of days an aadhaar has done at least one declined transaction having response code as '12' in last 180 days          |
+| adr_count_friday                | Count of successful transactions on Friday by an aadhaar in last 180 days                                                  |
+| adr_count_saturday              | Count of successful transactions on Saturday by an aadhaar in last 180 days                                                |
+| adr_count_sunday                | Count of successful transactions on Sunday by an aadhaar in last 180 days                                                  |
+| adr_avg_amt_friday              | Average amount of successful transactions on Friday by an aadhaar in last 180 days                                         |
+| adr_avg_amt_saturday            | Average amount of successful transactions on Saturday by an aadhaar in last 180 days                                       |
+| adr_avg_amt_sunday              | Average amount of successful transactions on Sunday by an aadhaar in last 180 days                                         |
+| bct_txn_count                   | Count of successful transactions done by a terminal in last 90 days                                                        |
+| bct_active_days                 | Count of days a terminal has done at least one transaction in last 90 days                                                 |
+| bct_unique_aadhaar_count        | Count of unique aadhaar which has used the terminal to do transactions in last 90 days                                     |
+| bct_age                         | Count of days since the first transaction done by a terminal in last 90 days                                               |
+| bct_day_bucket_1                | Count of successful transaction happened on dates (1 to 10) by a terminal in last 90 days                                  |
+| bct_day_bucket_2                | Count of successful transaction happened on dates (11 to 20) by a terminal in last 90 days                                 |
+| bct_day_bucket_3                | Count of successful transaction happened on dates (21 to 30) by a terminal in last 90 days                                 |
+| bct_cw_count                    | Count of successful cash withdrawal transactions by a terminal in last 180 days                                            |
+| bct_merch_pay_count             | Count of successful merchant pay transactions by a terminal in last 90 days                                                |
+| bct_avg_amt_cw                  | Average transaction amount of successful cash withdrawal transactions by a terminal in last 90 days                        |
+| bct_avg_amt_mp                  | Average transaction amount of successful merchant pay transactions by a terminal in last 90 days                           |
+| bct_median_amt_cw               | Median transaction amount of successful cash withdrawal transactions by a terminal in last 90 days                         |
+| bct_median_amt_mp               | Median transaction amount of successful merchant pay transactions by a terminal in last 90 days                            |
+| bct_fail_count_cw               | Count of failed cash withdrawal transactions by a terminal in last 90 days                                                 |
+| bct_fail_count_mp               | Count of failed merchant pay transactions by a terminal in last 90 days                                                    |
+| bct_lt_5kamt_count_cw           | Count of successful cash withdrawal transactions where transaction amount is less than 5000 by a terminal in last 90 days  |
+| bct_gt_9kamt_count_cw           | Count of successful cash withdrawal transactions where transaction amount is more than 9000 by a terminal in last 90 days  |
+| bct_lt_5kamt_count_mp           | Count of successful merchant pay transactions where transaction amount is less than 5000 by a terminal in last 90 days     |
+| bct_gt_9kamt_count_mp           | Count of successful merchant pay transactions where transaction amount is more than 9000 by a terminal in last 90 days     |
+| bct_std_dev_cw                  | Standard deviations of successful cash withdrawal transactions by a terminal in last 90 days                               |
+| bct_min_amt_cw                  | Minimum transaction amount for successful cash withdrawal transaction by a terminal in last 90 days                        |
+| bct_max_amt_cw                  | Maximum transaction amount for successful cash withdrawal transaction by a terminal in last 90 days                        |
+| bct_std_dev_mp                  | Standard deviations of successful merchant pay transactions by a terminal in last 90 days                                  |
+| bct_min_amt_mp                  | Minimum transaction amount for successful merchant pay transaction by a terminal in last 90 days                           |
+| bct_max_amt_mp                  | Maximum transaction amount for successful merchant pay transaction by a terminal in last 90 days                           |
+| bct_count_0to4                  | Count of successful transaction happened between 12:00 am to 4:59 am by a terminal in last 90 days                         |
+| bct_count_5to7                  | Count of successful transaction happened between 5:00 am to 7:59 am by a terminal in last 90 days                          |
+| bct_count_8to20                 | Count of successful transaction happened between 8:00 am to 8:59 pm by a terminal in last 90 days                          |
+| bct_count_21to23                | Count of successful transaction happened between 9:00 pm to 11:59 pm by a terminal in last 90 days                         |
+| bct_avg_amt_0to4                | Average amount of successful transactions happened between 12:00 am to 4:59 am by a terminal in last 90 days               |
+| bct_avg_amt_5to7                | Average amount of successful transactions happened between 5:00 am to 7:59 am by a terminal in last 90 days                |
+| bct_avg_amt_8to20               | Average amount of successful transactions happened between 8:00 am to 8:59 pm by a terminal in last 90 days                |
+| bct_avg_amt_21to23              | Average amount of successful transactions happened between 9:00 pm to 11:59 pm by a terminal in last 90 days               |
+| bct_count_bd_14                 | Count of declined transactions having response code as '14' for a terminal in last 90 days                                 |
+| bct_count_bd_15                 | Count of declined transactions having response code as '15' for a terminal in last 90 days                                 |
+| bct_count_bd_uw                 | Count of declined transactions having response code as 'UW' for a terminal in last 90 days                                 |
+| bct_count_bd_24                 | Count of declined transactions having response code as '24' for a terminal in last 90 days                                 |
+| bct_count_bd_12                 | Count of declined transactions having response code as '12' for a terminal in last 90 days                                 |
+| bct_count_bd_20                 | Count of declined transactions having response code as '20' for a terminal in last 90 days                                 |
+| bct_count_bd_59                 | Count of declined transactions having response code as '59' for a terminal in last 90 days                                 |
+| bct_uw_decline_active_days      | Count of days a terminal has done at least one declined transaction having response code as 'UW' in last 90 days           |
+| bct_24_decline_active_days      | Count of days a terminal has done at least one declined transaction having response code as '24' in last 90 days           |
+| bct_59_decline_active_days      | Count of days a terminal has done at least one declined transaction having response code as '59' in last 90 days           |
+| bct_14_decline_active_days      | Count of days a terminal has done at least one declined transaction having response code as '14' in last 90 days           |
+| bct_15_decline_active_days      | Count of days a terminal has done at least one declined transaction having response code as '15' in last 90 days           |
+| bct_12_decline_active_days      | Count of days a terminal has done at least one declined transaction having response code as '12' in last 90 days           |
+| bct_20_decline_active_days      | Count of days a terminal has done at least one declined transaction having response code as '20' in last 90 days           |
+| bct_count_friday                | Count of successful transactions on Friday by a terminal in last 90 days                                                   |
+| bct_count_saturday              | Count of successful transactions on Saturday by a terminal in last 90 days                                                 |
+| bct_count_sunday                | Count of successful transactions on Sunday by a terminal in last 90 days                                                   |
+| bct_avg_amt_friday              | Average amount of successful transactions on Friday by a terminal in last 90 days                                          |
+| bct_avg_amt_saturday            | Average amount of successful transactions on Saturday by a terminal in last 90 days                                        |
+| bct_avg_amt_sunday              | Average amount of successful transactions on Sunday by a terminal in last 90 days                                          |
+Sample code for training to generate artifacts
+
+import pandas as pd
+import numpy as np 
+import os
+import pickle 
+import json
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+
+feature_cols = ['shtrn','fraud_flag','adr_day_bucket_1', 'adr_day_bucket_2', 'adr_day_bucket_3', 'adr_txn_count', 'adr_txn_type_count', 'adr_active_days', 'adr_unique_terminals_count', 'adr_unique_shispt_count', 'adr_unique_shispt_count_succ_cw', 'adr_unique_shispt_count_succ_mp', 'adr_age', 'adr_cw_count', 'adr_merch_pay_count', 'adr_blnce_enq_count', 'adr_cash_deposit_count', 'adr_fund_transfer_count', 'adr_mini_statmt_count', 'adr_auth_onus_count', 'adr_avg_amt_cw', 'adr_avg_amt_mp', 'adr_avg_amt_cash_deposit', 'adr_avg_amt_fund_transfer', 'adr_median_amt_cw', 'adr_median_amt_mp', 'adr_median_amt_cash_deposit', 'adr_median_amt_fund_transfer', 'adr_fail_count_cw', 'adr_fail_count_mp', 'adr_lt_5kamt_count_cw', 'adr_gt_9kamt_count_cw', 'adr_lt_5kamt_count_mp', 'adr_gt_9kamt_count_mp', 'adr_std_dev_cw', 'adr_min_amt_cw',
+'adr_max_amt_cw', 'adr_std_dev_mp', 'adr_min_amt_mp', 'adr_max_amt_mp', 'adr_count_0to4', 'adr_count_5to7', 'adr_count_8to20',
+'adr_count_21to23', 'adr_avg_amt_0to4', 'adr_avg_amt_5to7', 'adr_avg_amt_8to20', 'adr_avg_amt_21to23', 'adr_count_bd_kt', 'adr_count_bd_om', 'adr_count_bd_w9', 'adr_count_bd_wa', 'adr_count_bd_24', 'adr_count_bd_u3', 'adr_count_bd_59', 'adr_count_bd_12', 'adr_kt_decline_active_days', 'adr_om_decline_active_days', 'adr_w9_decline_active_days', 'adr_wa_decline_active_days', 'adr_24_decline_active_days', 'adr_u3_decline_active_days', 'adr_59_decline_active_days', 'adr_12_decline_active_days', 'adr_count_friday', 'adr_count_saturday', 'adr_count_sunday', 'adr_avg_amt_friday', 'adr_avg_amt_saturday', 'adr_avg_amt_sunday',
+'bct_txn_count', 'bct_active_days', 'bct_unique_aadhaar_count', 'bct_age', 'bct_day_bucket_1', 'bct_day_bucket_2', 'bct_day_bucket_3', 'bct_cw_count', 'bct_merch_pay_count', 'bct_avg_amt_cw', 'bct_avg_amt_mp','bct_median_amt_cw', 'bct_median_amt_mp', 'bct_fail_count_cw',
+'bct_fail_count_mp', 'bct_lt_5kamt_count_cw', 'bct_gt_9kamt_count_cw', 'bct_lt_5kamt_count_mp', 'bct_gt_9kamt_count_mp', 'bct_std_dev_cw', 'bct_min_amt_cw', 'bct_max_amt_cw', 'bct_std_dev_mp', 'bct_min_amt_mp', 'bct_max_amt_mp', 'bct_count_0to4', 'bct_count_5to7', 'bct_count_8to20', 'bct_count_21to23', 'bct_avg_amt_0to4', 'bct_avg_amt_5to7', 'bct_avg_amt_8to20', 'bct_avg_amt_21to23', 'bct_count_bd_14', 'bct_count_bd_15', 'bct_count_bd_uw', 'bct_count_bd_24', 'bct_count_bd_12', 'bct_count_bd_20', 'bct_count_bd_59', 'bct_uw_decline_active_days', 'bct_24_decline_active_days', 'bct_59_decline_active_days', 'bct_14_decline_active_days', 'bct_15_decline_active_days', 'bct_12_decline_active_days', 'bct_20_decline_active_days', 'bct_count_friday', 'bct_count_saturday', 'bct_count_sunday', 'bct_avg_amt_friday', 'bct_avg_amt_saturday', 'bct_avg_amt_sunday']
+
+df = pd.read_csv('dataset/aeps_hackathon_test.csv')
+
+df1 = df[feature_cols]
+
+df2 = df1.fillna(0)
+
+X = df2.loc[:,df2.columns!='fraud_flag']
+y = df2['fraud_flag']
+
+X_train,X_test,y_train,y_test = train_test_split(X,y,random_state=104,test_size=0.25,shuffle=True)
+
+print('X_TRAIN',X_train.shape)
+print('Y_TRAIN',y_train.shape)
+print('X_TEST',X_test.shape)
+print('Y_TEST',y_test.shape)
+
+model = RandomForestClassifier()    
+model.fit(X_train,y_train)
+
+yhat = model.predict(X_test)
+
+cm = confusion_matrix(y_test,yhat,labels=[0, 1])
+cm[np.isnan(cm)] = 0
+
+tn, fp, fn, tp = cm.flatten()
+tn, fp, fn, tp = tn.item(), fp.item(), fn.item(), tp.item()
+
+recall = tp / (tp + fn)
+
+fpr = fp / (fp + tn)
+
+score = recall-(1000*fpr)
+
+print('SCORE :',score)
+
+with open('artifacts/model.pkl',"wb") as f:
+    pickle.dump(model,f)
